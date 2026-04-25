@@ -7,36 +7,14 @@ free: false
 
 **ゆっくり霊夢：**  
 「みんな、まずはLaravelプロジェクトの作成から始めるわよ。  
-今回は**ローカルにPHPを入れず**、Docker Compose上のComposerを使って進めるの。」
-
-**ゆっくり魔理沙：**  
-「その通りだぜ！  
-まずはDocker Desktopを起動して、プロジェクト直下に以下の`compose.yaml`を用意しよう。」
-
-```yaml
-services:
-  php:
-    image: php:8.5-cli
-    working_dir: /workspace
-    volumes:
-      - ./:/workspace
-    command: sh -lc "tail -f /dev/null"
-
-  composer:
-    image: composer:2
-    working_dir: /workspace
-    volumes:
-      - ./:/workspace
-    entrypoint: ["composer"]
-```
+今回は**ローカルにPHPを入れず**、Dockerイメージ上のComposerを使って進めるの。」
 
 **ゆっくり霊夢：**  
-「準備できたら、まずDockerとComposerコンテナが使えるか確認してね。」
+「準備できたら、まずDockerとComposerのバージョンを確認してね。」
 
 ```bash
-# ここは yukkuri-laravel/ （リポジトリルート）で実行
-docker compose version
-docker compose run --rm composer --version
+docker --version
+docker run --rm composer:2 --version
 ```
 
 **ゆっくり魔理沙：**  
@@ -48,8 +26,8 @@ docker compose run --rm composer --version
 以下のコマンドを使えば、**Laravel 13系**のプロジェクトが作成されるぜ！」
 
 ```bash
-# ここは yukkuri-laravel/ （リポジトリルート）で実行
-docker compose run --rm composer create-project laravel/laravel:^13.0 my_laravel_app
+docker run --rm -v "$PWD":/workspace -w /workspace composer:2 \
+  create-project laravel/laravel:^13.0 my_laravel_app
 ```
 
 **ゆっくり霊夢：**  
@@ -73,13 +51,12 @@ docker compose run --rm composer create-project laravel/laravel:^13.0 my_laravel
 「準備ができたら、プロジェクト直下で以下を実行するわ。」
 
 ```bash
-# ここは yukkuri-laravel/ （リポジトリルート）で実行
-docker compose run --rm -w /workspace/my_laravel_app composer require laravel/sail --dev
-docker compose run --rm -w /workspace/my_laravel_app php php artisan sail:install
-cp my_laravel_app/.env.example my_laravel_app/.env
-
-# ここからは my_laravel_app/ で実行
 cd my_laravel_app
+docker run --rm -v "$PWD":/var/www/html -w /var/www/html composer:2 \
+  require laravel/sail --dev
+docker run --rm -v "$PWD":/var/www/html -w /var/www/html php:8.5-cli \
+  php artisan sail:install
+cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
 ./vendor/bin/sail artisan migrate
@@ -99,6 +76,7 @@ Linux環境では `id -u` と `id -g` の結果を設定すればOKだぜ。」
 Sail経由なら次のコマンドで実行できるんだ！」
 
 ```bash
+# ここは my_laravel_app/ で実行
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run dev
 ```
@@ -107,10 +85,8 @@ Sail経由なら次のコマンドで実行できるんだ！」
 「最後に、次のコマンドで起動確認しておくと安心よ。」
 
 ```bash
-# ここは yukkuri-laravel/ （リポジトリルート）で実行
-docker compose run --rm php php -v
-
-# ここは my_laravel_app/ で実行
+cd my_laravel_app
+docker run --rm -v "$PWD":/var/www/html -w /var/www/html php:8.5-cli php -v
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan about
 ```
