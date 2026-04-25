@@ -16,7 +16,7 @@ free: false
 ```yaml
 services:
   php:
-    image: php:8.4-cli
+    image: php:8.5-cli
     working_dir: /workspace
     volumes:
       - ./:/workspace
