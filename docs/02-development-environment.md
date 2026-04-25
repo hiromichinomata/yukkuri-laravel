@@ -27,11 +27,11 @@ docker run --rm composer:2 --version
 
 ```bash
 docker run --rm -v "$PWD":/workspace -w /workspace composer:2 \
-  create-project laravel/laravel:^13.0 my_laravel_app
+  create-project laravel/laravel:^13.0 .
 ```
 
 **ゆっくり霊夢：**  
-「`my_laravel_app`の部分は、自分のプロジェクト名に変更してね。  
+「このコマンドは、空の作業ディレクトリにLaravelを展開する前提よ。  
 これで、必要なパッケージが全てインストールされ、プロジェクトの基盤が整うの。」
 
 ---
@@ -51,11 +51,8 @@ docker run --rm -v "$PWD":/workspace -w /workspace composer:2 \
 「準備ができたら、プロジェクト直下で以下を実行するわ。」
 
 ```bash
-cd my_laravel_app
-docker run --rm -v "$PWD":/var/www/html -w /var/www/html composer:2 \
-  require laravel/sail --dev
-docker run --rm -v "$PWD":/var/www/html -w /var/www/html php:8.5-cli \
-  php artisan sail:install
+docker run --rm -v "$PWD":/var/www/html -w /var/www/html composer:2 require laravel/sail --dev
+docker run --rm -v "$PWD":/var/www/html -w /var/www/html php:8.5-cli php artisan sail:install
 cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
@@ -63,7 +60,7 @@ cp .env.example .env
 ```
 
 **ゆっくり魔理沙：**  
-「`WWWUSER` と `WWWGROUP` は、最初から `my_laravel_app/.env.example` に入れておくと毎回の追記が不要だぜ。  
+「`WWWUSER` と `WWWGROUP` は、最初から `.env.example` に入れておくと毎回の追記が不要だぜ。  
 例えば macOS なら `WWWUSER=502`、`WWWGROUP=20` を設定しておけば、Sail起動時の警告を防げるんだ。  
 Linux環境では `id -u` と `id -g` の結果を設定すればOKだぜ。」
 
@@ -76,7 +73,7 @@ Linux環境では `id -u` と `id -g` の結果を設定すればOKだぜ。」
 Sail経由なら次のコマンドで実行できるんだ！」
 
 ```bash
-# ここは my_laravel_app/ で実行
+# ここは Laravelプロジェクト直下で実行
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run dev
 ```
@@ -85,7 +82,6 @@ Sail経由なら次のコマンドで実行できるんだ！」
 「最後に、次のコマンドで起動確認しておくと安心よ。」
 
 ```bash
-cd my_laravel_app
 docker run --rm -v "$PWD":/var/www/html -w /var/www/html php:8.5-cli php -v
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan about
