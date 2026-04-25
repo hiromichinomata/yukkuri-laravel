@@ -6,27 +6,49 @@ free: false
 ## 2.1 ComposerのインストールとLaravelプロジェクトの作成
 
 **ゆっくり霊夢：**  
-「みんな、まずはLaravelを使うための必須ツール、Composerのインストールから始めるわよ。  
-ComposerはPHPのパッケージ管理ツールで、Laravelをはじめとする多くのライブラリを簡単に管理できるの。」
+「みんな、まずはLaravelプロジェクトの作成から始めるわよ。  
+今回は**ローカルにPHPを入れず**、Docker Compose上のComposerを使って進めるの。」
 
 **ゆっくり魔理沙：**  
 「その通りだぜ！  
-まずは公式サイト（[getcomposer.org](https://getcomposer.org/download/)）からインストーラーをダウンロードしよう。  
-各OS（Windows、macOS、Linux）向けのインストール手順が記載されているから、手順に沿ってセットアップしてくれ！」
+まずはDocker Desktopを起動して、プロジェクト直下に以下の`compose.yaml`を用意しよう。」
+
+```yaml
+services:
+  php:
+    image: php:8.4-cli
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: sh -lc "tail -f /dev/null"
+
+  composer:
+    image: composer:2
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    entrypoint: ["composer"]
+```
 
 **ゆっくり霊夢：**  
-「Composerが無事インストールできたら、コマンドラインで下記のコマンドを実行してバージョンを確認してね。」
+「準備できたら、まずDockerとComposerコンテナが使えるか確認してね。」
 
 ```bash
-composer -V
+# ここは yukkuri-laravel/ （リポジトリルート）で実行
+docker compose version
+docker compose run --rm composer --version
 ```
 
 **ゆっくり魔理沙：**  
+「この本は**Laravel 13（安定版）**前提だから、  
+`composer create-project` で13系を明示して作るのが安全だぜ！」
+
+**ゆっくり魔理沙：**  
 「次に、Laravelプロジェクトの作成だ。  
-以下のコマンドを使えば、最新のLaravelプロジェクトが作成されるぜ！」
+以下のコマンドを使えば、**Laravel 13系**のプロジェクトが作成されるぜ！」
 
 ```bash
-composer create-project --prefer-dist laravel/laravel my_laravel_app
+docker compose run --rm composer create-project laravel/laravel:^13.0 my_laravel_app
 ```
 
 **ゆっくり霊夢：**  
@@ -35,34 +57,46 @@ composer create-project --prefer-dist laravel/laravel my_laravel_app
 
 ---
 
-## 2.2 Homestead／Dockerによるローカル開発環境構築
+## 2.2 Laravel Sail（Docker）によるローカル開発環境構築
 
 **ゆっくり霊夢：**  
 「Laravelの開発を快適に進めるためには、ローカル開発環境の構築が大切よ。  
-ここでは、代表的な方法としてHomesteadとDockerの2つを紹介するわ。」
+ここでは、現在の標準的な方法として**Laravel Sail（Docker）**を紹介するわ。」
 
 **ゆっくり魔理沙：**  
-「まずはHomesteadだぜ！  
-HomesteadはLaravel公式が提供する仮想マシンで、VagrantとVirtualBoxがあれば簡単にセットアップできる。  
-公式リポジトリをクローンして、`Homestead.yaml`ファイルを編集するだけで、Webサーバーやデータベースなど必要な環境がすぐに整うんだ。」
+「Sailを使う前に、`docker --version` と `docker info` を実行して、  
+**Dockerデーモンが起動していること**を確認しておくんだぜ。  
+`Cannot connect to the Docker daemon` と表示される場合は、Docker Desktopを起動してから再実行しよう！」
 
 **ゆっくり霊夢：**  
-「もし、コンテナ技術が好きな人はDockerもおすすめよ。  
-Laravel専用のDocker環境としては、`laradock`や`sail`があるの。  
-特に、Laravel SailはLaravelに同梱されている公式の軽量Docker環境だから、初めてでも扱いやすいわね。」
-
-**ゆっくり魔理沙：**  
-「例えば、Laravel Sailを使う場合は、プロジェクト作成時にオプションを指定するか、後から追加できるぜ。  
-コマンド例はこんな感じだ！」
+「準備ができたら、プロジェクト直下で以下を実行するわ。」
 
 ```bash
+docker compose run --rm -w /workspace/my_laravel_app composer require laravel/sail --dev
+docker compose run --rm -w /workspace/my_laravel_app php php artisan sail:install
+cp my_laravel_app/.env.example my_laravel_app/.env
 cd my_laravel_app
-./vendor/bin/sail up
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate
 ```
+
+**ゆっくり魔理沙：**  
+「`WWWUSER` と `WWWGROUP` は、最初から `my_laravel_app/.env.example` に入れておくと毎回の追記が不要だぜ。  
+例えば macOS なら `WWWUSER=502`、`WWWGROUP=20` を設定しておけば、Sail起動時の警告を防げるんだ。」
 
 **ゆっくり霊夢：**  
 「これで、Dockerコンテナ内でLaravelアプリケーションが動き出すの。  
-自分の開発スタイルに合わせて、HomesteadかDockerを選んでみてね。」
+ブラウザで `http://localhost` にアクセスしてトップページが表示されれば成功よ。」
+
+**ゆっくり魔理沙：**  
+「フロントエンド資産をビルドする場合は、Node.js / npm も必要になるぜ。  
+Sail経由なら次のコマンドで実行できるんだ！」
+
+```bash
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run dev
+```
 
 ---
 

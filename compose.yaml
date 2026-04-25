@@ -1,0 +1,14 @@
+services:
+  php:
+    image: php:8.4-cli
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: sh -lc "tail -f /dev/null"
+
+  composer:
+    image: composer:2
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    entrypoint: ["composer"]
