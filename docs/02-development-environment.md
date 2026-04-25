@@ -3,7 +3,7 @@ title: "第2章: Laravel開発環境の構築"
 free: false
 ---
 
-## 2.1 ComposerのインストールとLaravelプロジェクトの作成
+## 2.1 Composerコンテナを使ったLaravelプロジェクトの作成
 
 **ゆっくり霊夢：**  
 「みんな、まずはLaravelプロジェクトの作成から始めるわよ。  
@@ -48,6 +48,7 @@ docker compose run --rm composer --version
 以下のコマンドを使えば、**Laravel 13系**のプロジェクトが作成されるぜ！」
 
 ```bash
+# ここは yukkuri-laravel/ （リポジトリルート）で実行
 docker compose run --rm composer create-project laravel/laravel:^13.0 my_laravel_app
 ```
 
@@ -72,9 +73,12 @@ docker compose run --rm composer create-project laravel/laravel:^13.0 my_laravel
 「準備ができたら、プロジェクト直下で以下を実行するわ。」
 
 ```bash
+# ここは yukkuri-laravel/ （リポジトリルート）で実行
 docker compose run --rm -w /workspace/my_laravel_app composer require laravel/sail --dev
 docker compose run --rm -w /workspace/my_laravel_app php php artisan sail:install
 cp my_laravel_app/.env.example my_laravel_app/.env
+
+# ここからは my_laravel_app/ で実行
 cd my_laravel_app
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan key:generate
@@ -83,7 +87,8 @@ cd my_laravel_app
 
 **ゆっくり魔理沙：**  
 「`WWWUSER` と `WWWGROUP` は、最初から `my_laravel_app/.env.example` に入れておくと毎回の追記が不要だぜ。  
-例えば macOS なら `WWWUSER=502`、`WWWGROUP=20` を設定しておけば、Sail起動時の警告を防げるんだ。」
+例えば macOS なら `WWWUSER=502`、`WWWGROUP=20` を設定しておけば、Sail起動時の警告を防げるんだ。  
+Linux環境では `id -u` と `id -g` の結果を設定すればOKだぜ。」
 
 **ゆっくり霊夢：**  
 「これで、Dockerコンテナ内でLaravelアプリケーションが動き出すの。  
@@ -96,6 +101,18 @@ Sail経由なら次のコマンドで実行できるんだ！」
 ```bash
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run dev
+```
+
+**ゆっくり霊夢：**  
+「最後に、次のコマンドで起動確認しておくと安心よ。」
+
+```bash
+# ここは yukkuri-laravel/ （リポジトリルート）で実行
+docker compose run --rm php php -v
+
+# ここは my_laravel_app/ で実行
+./vendor/bin/sail up -d
+./vendor/bin/sail artisan about
 ```
 
 ---
