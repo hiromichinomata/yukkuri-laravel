@@ -48,19 +48,34 @@ Laravelでは、シンプルなAPI認証を実現するために、Laravel Sanct
 
 ```bash
 composer require laravel/sanctum
-```
-
-**ゆっくり霊夢：**  
-「インストール後、マイグレーションを実行して必要なテーブルを作成するの。」
-
-```bash
 php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 php artisan migrate
 ```
 
+**ゆっくり霊夢：**  
+「Laravel 13 では、`routes/api.php`は最初から用意されていないことがあるの。  
+`bootstrap/app.php`の`withRouting()`に`api:`を追加して、APIルートを有効にしてね。」
+
+```php
+// bootstrap/app.php
+->withRouting(
+    web: __DIR__.'/../routes/web.php',
+    api: __DIR__.'/../routes/api.php',
+    commands: __DIR__.'/../routes/console.php',
+    health: '/up',
+)
+```
+
 **ゆっくり魔理沙：**  
-「そして、`app/Http/Kernel.php`にある`api`ミドルウェアグループに、`EnsureFrontendRequestsAreStateful`（SPA向け）や`auth:sanctum`を追加して、認証を適用できるようにするんだぜ。  
-これで、ユーザーがログインすると、発行されたトークンを使ってAPIにアクセスできるようになるんだな！」
+「認証が必要なAPIには、ルート単位で`auth:sanctum`ミドルウェアを付けるんだ。  
+古い`app/Http/Kernel.php`は Laravel 11 以降存在しないから、混同しないように注意だぜ！」
+
+```php
+// routes/api.php
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/posts', [PostController::class, 'store']);
+});
+```
 
 **ゆっくり霊夢：**  
 「また、ログイン時にトークンを発行するエンドポイントを用意し、ユーザーが正しい資格情報を入力した場合にトークンを返す処理を実装するの。  

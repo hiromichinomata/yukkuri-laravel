@@ -22,20 +22,27 @@ Bladeを使うと、全ページで共通のレイアウト（ヘッダーやフ
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'My Laravel App')</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <title>@yield('title', 'MicroBlog')</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     @include('partials.header')
-    
+
     <main class="container">
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
         @yield('content')
     </main>
-    
+
     @include('partials.footer')
 </body>
 </html>
 ```
+
+**ゆっくり魔理沙：**  
+「Laravel 13 では CSS / JS は Vite 経由で読み込むのが標準だぜ。  
+`asset('css/app.css')` よりも `@vite(...)` を使う方が、開発時の HMR も本番ビルドもスムーズになるんだ！」
 
 **ゆっくり霊夢：**  
 「この例では、`@yield`ディレクティブで各ページ固有のタイトルやコンテンツを差し込むスペースを確保しているわ。  

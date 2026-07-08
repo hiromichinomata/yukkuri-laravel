@@ -123,19 +123,24 @@ class CheckUserStatus
 
 **ゆっくり魔理沙：**  
 「このミドルウェアをグローバルまたはルート単位で適用することで、特定の条件に基づいた処理を自動化できるんだ。  
-例えば、ルートに適用する場合は、`app/Http/Kernel.php`の`$routeMiddleware`に登録して、ルート定義で指定するぜ！」
+Laravel 13 では、`app/Http/Kernel.php`の代わりに`bootstrap/app.php`でエイリアス登録するぜ！」
 
 ```php
-// app/Http/Kernel.php
-protected $routeMiddleware = [
-    // 他のミドルウェア…
-    'check.status' => \App\Http\Middleware\CheckUserStatus::class,
-];
+// bootstrap/app.php
+use App\Http\Middleware\CheckUserStatus;
+
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->alias([
+        'check.status' => CheckUserStatus::class,
+    ]);
+})
 ```
 
 ```php
 // routes/web.php
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('check.status');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified', 'check.status'])->name('dashboard');
 ```
 
 **ゆっくり霊夢：**  

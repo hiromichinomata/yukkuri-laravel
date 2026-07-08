@@ -85,8 +85,8 @@ public function store(Request $request)
 これにより、ユーザーにとってわかりやすいフィードバックを提供できるのよ。」
 
 **ゆっくり魔理沙：**  
-「例えば、`resources/lang/ja/validation.php`を編集することで、日本語のエラーメッセージを細かく設定できるぜ！  
-こうしたカスタマイズは、ユーザーエクスペリエンスの向上に大きく寄与するんだな。」
+「例えば、Laravel 13 では言語ファイルはプロジェクト直下の`lang/ja/validation.php`を編集するぜ！  
+さらに `.env` で `APP_LOCALE=ja` にしておけば、日本語メッセージが有効になるんだな。」
 
 ---
 

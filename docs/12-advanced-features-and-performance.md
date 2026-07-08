@@ -93,7 +93,19 @@ class SendPostNotification implements ShouldQueue
 「このように、イベントとリスナーを使えば、メイン処理に影響を与えずに、非同期で重い処理をオフロードできるのね。」
 
 **ゆっくり魔理沙：**  
-「イベントサービスプロバイダー（`app/Providers/EventServiceProvider.php`）にイベントとリスナーのマッピングを追加すれば、自動的に連携されるんだぜ！」
+「イベントとリスナーは、Laravel 11 以降だと自動検出されることも多いけど、明示的に登録するなら`AppServiceProvider`で`Event::listen()`を使うぜ！」
+
+```php
+// app/Providers/AppServiceProvider.php
+use App\Events\PostCreated;
+use App\Listeners\SendPostNotification;
+use Illuminate\Support\Facades\Event;
+
+public function boot(): void
+{
+    Event::listen(PostCreated::class, SendPostNotification::class);
+}
+```
 
 ---
 

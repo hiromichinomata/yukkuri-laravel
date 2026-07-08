@@ -18,23 +18,26 @@ Laravel EchoはJavaScriptライブラリとして提供されていて、フロ�
 
 ```javascript
 // resources/js/bootstrap.js
-
 import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
-window.Pusher = require('pusher-js');
+window.Pusher = Pusher;
 
-// 例：Pusherを使った場合
+// 例：Laravel Reverb / Pusher 互換サーバーを使う場合
 window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: process.env.MIX_PUSHER_APP_KEY,
-    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
-    forceTLS: true,
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],
 });
 ```
 
 **ゆっくり霊夢：**  
-「この設定により、Pusher互換のサーバー（例：laravel-echo-server）に接続し、リアルタイムでイベントを受信できるようになるの。  
-次に、サーバー側でイベントをブロードキャストする方法を確認しましょう。」
+「Laravel 13 + Vite では、環境変数プレフィックスは`MIX_`ではなく`VITE_`よ。  
+また、本書のサンプルでは `BROADCAST_CONNECTION=log` ならログ出力のみ、本格的な WebSocket は Reverb などを別途立てる前提になっているの。」
 
 *【サンプルコード：イベントのブロードキャスト設定】*
 

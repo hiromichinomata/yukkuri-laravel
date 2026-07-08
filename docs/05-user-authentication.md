@@ -19,15 +19,19 @@ Laravel 8以降では、`laravel/ui`や`Laravel Breeze`、`Laravel Jetstream`と
 
 ```bash
 composer require laravel/breeze --dev
-php artisan breeze:install
+php artisan breeze:install blade
 ```
+
+**ゆっくり霊夢：**  
+「`breeze:install` ではスタックを指定するの。  
+Blade だけで始めるなら `blade`、Inertia（React / Vue）を使う場合はそれぞれのオプションを選んでね。」
 
 **ゆっくり魔理沙：**  
 「その後、npmでフロントエンドのビルドも忘れずに！」
 
 ```bash
 npm install
-npm run dev
+npm run build
 ```
 
 **ゆっくり霊夢：**  
@@ -77,7 +81,8 @@ public function store(Request $request)
 
     Auth::login($user);
 
-    return redirect(RouteServiceProvider::HOME);
+    // Laravel 11 以降、RouteServiceProvider は使わない
+    return redirect(route('dashboard', absolute: false));
 }
 ```
 

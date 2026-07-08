@@ -51,6 +51,10 @@ class CreatePostsTable extends Migration
 }
 ```
 
+**ゆっくり魔理沙：**  
+「Laravel 9 以降は、クラス名のない匿名マイグレーション（`return new class extends Migration`）が標準だぜ。  
+どちらでも動くが、`php artisan make:migration`で作ると匿名クラスになることが多いんだ！」
+
 **ゆっくり霊夢：**  
 「このように、マイグレーションファイルにテーブルの構造を定義して、`php artisan migrate`で実行するだけでデータベースが更新されるのよ！」
 
@@ -85,8 +89,8 @@ class PostFactory extends Factory
     public function definition()
     {
         return [
-            'title'   => $this->faker->sentence,
-            'content' => $this->faker->paragraph,
+            'title'   => fake()->sentence(),
+            'content' => fake()->paragraph(),
             'user_id' => User::factory(), // ユーザーも同時に生成
         ];
     }
